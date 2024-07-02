@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIMB - Scan Book</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">WIMB</div>
+            <div class="menu">
+                <a href="index.html">Home</a>
+                <a href="scan-isbn.html">Scan ISBN</a>
+                <a href="scan-book.html">Scan Book</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="signin.html">Sign In / Sign Up</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scan Book Page Content -->
+    <section id="scan-book">
+        <div class="container">
+            <h1>Scan Book</h1>
+            <p>Upload the book cover image or enter details manually:</p>
+            <form>
+                <label for="cover-image">Upload Cover Image:</label>
+                <input type="file" id="cover-image" name="cover-image">
+                <h2>Or Enter Book Details Manually:</h2>
+                <input type="text" placeholder="Title" required>
+                <input type="text" placeholder="Author" required>
+                <input type="text" placeholder="Publisher">
+                <input type="text" placeholder="Year">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
+
