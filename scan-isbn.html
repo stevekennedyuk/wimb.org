@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WIMB - Scan ISBN</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -31,13 +32,68 @@
     <section id="scan-isbn">
         <div class="container">
             <h1>Scan ISBN</h1>
-            <p>Enter the ISBN of the book you want to add:</p>
-            <form>
-                <input type="text" placeholder="Enter ISBN" required>
-                <button type="submit">Submit</button>
-            </form>
+            <p>Use your camera to scan the ISBN barcode of the book you want to add:</p>
+            <div id="scanner-container"></div>
+            <button id="start-scanner">Start Scanner</button>
+            <div id="book-details"></div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('start-scanner').addEventListener('click', function() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner-container'), // Or '#yourElement' (optional)
+                    constraints: {
+                        facingMode: "environment" // or user
+                    }
+                },
+                decoder: {
+                    readers: ["ean_reader"] // List of active readers
+                }
+            }, function(err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                var isbn = result.codeResult.code;
+                console.log("ISBN detected: " + isbn);
+                fetchBookDetails(isbn);
+                Quagga.stop();
+            });
+        });
+
+        function fetchBookDetails(isbn) {
+            fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`)
+                .then(response => response.json())
+                .then(data => {
+                    var bookData = data[`ISBN:${isbn}`];
+                    if (bookData) {
+                        var bookDetails = `
+                            <h2>Book Details</h2>
+                            <p><strong>Title:</strong> ${bookData.title}</p>
+                            <p><strong>Authors:</strong> ${bookData.authors.map(author => author.name).join(', ')}</p>
+                            <p><strong>Publisher:</strong> ${bookData.publishers.map(publisher => publisher.name).join(', ')}</p>
+                            <p><strong>Year:</strong> ${bookData.publish_date}</p>
+                            <img src="${bookData.cover ? bookData.cover.medium : ''}" alt="Book Cover">
+                        `;
+                        document.getElementById('book-details').innerHTML = bookDetails;
+                    } else {
+                        document.getElementById('book-details').innerHTML = '<p>Book details not found.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.log('Error fetching book details:', error);
+                });
+        }
+    </script>
 </body>
 </html>
 
